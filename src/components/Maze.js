@@ -2,7 +2,7 @@ import { EllerMaze, EllerArgs } from 'lazy-eller';
 import MuseumWall from './MuseumWall';
 import { useEffect, useState, Suspense } from 'react';
 import { useLoader } from '@react-three/fiber';
-import { Plane } from '@react-three/drei';
+import { Html, Plane } from '@react-three/drei';
 import { TextureLoader, DoubleSide } from 'three';
 import floorImage from '../static/floor_texture.jpg';
 
@@ -37,7 +37,8 @@ function Room({ artworks, cell, pos = [0, 0, 0], size = cellSize / 2 }) {
 // updates when camera's z position is greater than the z position of the 2nd to last row
 const useMazeGenerator = ({ actorZPos }) => {
     var mazeGenerator = new EllerMaze({ width: mazeWidth });
-    const [mazeRows, setMazeRows] = useState([mazeGenerator.next()]);
+    var initialMazeState = [mazeGenerator.next(), mazeGenerator.next()]
+    const [mazeRows, setMazeRows] = useState([...initialMazeState]);
     const [threshold, setNewThreshold] = useState(cellSize)
 
     useEffect(() => {
@@ -50,40 +51,27 @@ const useMazeGenerator = ({ actorZPos }) => {
 }
 
 
-const Maze = ({ artworks, cameraPos }) => {
-    // var mazeWidth = 10;
-    // var mazeHeight = 10;
-    // var maze = [];
-    // var mazeGenerator = new EllerMaze({ width: mazeWidth });
-    // for (var i = 0; i < mazeHeight - 1; i++) {
-    //     maze.push(mazeGenerator.next());
-    // }
-    // maze.push(mazeGenerator.next(true));
-    // var walls = [];
-    // for (var i = 0; i < mazeHeight; i++) {
-    //     for (var j = 0; j < mazeWidth; j++) {
-    //         walls.push(<Room artworks={artworks} cell={maze[i].value[j]} pos={[cellSize * j, -10, cellSize * i]} />);
-    //     }
-    // }
-
-    // return walls;
-
+const Maze = ({ artworks, cameraPos, toASCII }) => {
     var maze = useMazeGenerator(cameraPos);
     var walls = [];
+    var ASCIIwalls = "";
     var i = 0;
     var j = 0;
 
     maze.forEach(row => {
-        console.log(row)
         for (var i = 0; i < mazeWidth; i++) {
         // row.forEach(cell => {
             // console.log(cell);
-            walls.push(<Room artworks={artworks} cell={row.value[j]} pos={[cellSize * j, -10, cellSize * i]} />);
-            i += 1;
+            walls.push(<Room artworks={artworks} cell={row.value[i]} pos={[cellSize * i, -10, cellSize * j]} />);
+            // i += 1;
         }
+        ASCIIwalls += EllerMaze.toASCII(row.value);
+        ASCIIwalls += "."
         j += 1;
     })
-
+    console.log("ascii")
+    console.log(ASCIIwalls)
+    toASCII(ASCIIwalls);
     return walls;
 
 }

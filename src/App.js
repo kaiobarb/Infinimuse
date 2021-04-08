@@ -76,8 +76,9 @@ function PhongSphere() {
 
 function App() {
   const [artworks, setArtworks] = useState([]);
-  const [cameraZPosition, setCameraZPositionInState] = useState(0)
-  var camRef;
+  const [asciiWalls, setAsciiWalls] = useState("");
+  const [cameraZPosition, setCameraZPositionInState] = useState(null)
+  var camRef = null;
 
   var ids = [];
   console.log("Starting API IDrequest ...")
@@ -100,18 +101,16 @@ function App() {
     return () => mounted = false;
   }, [])
 
-  function CameraWithLight() {
-    const cam = useRef();
+  function CameraWithLight({ cRef }) {
+    cRef = useRef();
     // useFrame((state, delta) => (cam.current ? cam.current.position.z += 0.1 : null))
-
-    if (cam.current != undefined) {
-      if (cam.current.position.z % cellSize == 0) {
-        setCameraZPositionInState(cam.current.position.z);
-      }
-    }
-
+    // useEffect(() => {
+    // if (cam.current.position.z % cellSize == 0) {
+    // setCameraZPositionInState(camRef.current);
+    // }    
+    //)
     return (
-      <PerspectiveCamera ref={cam} makeDefault position={[cellSize * 5, cellSize * 2, 10]} rotation={[0, Math.PI, 0]}>
+      <PerspectiveCamera ref={cRef} makeDefault position={[cellSize * 5, cellSize * 2, 10]} rotation={[0, Math.PI, 0]}>
         <pointLight intensity={2} decay={2} distance={55} />
         <Stars
           radius={100} // Radius of the inner sphere (default=100)
@@ -125,29 +124,37 @@ function App() {
     )
   }
 
+  function formatMaze(str) {
+    var r = str.split(".");
+    return <div>{r.map(row =>  <p>{row}<br/></p> )}</div>
+  }
+
   return (
-    <Canvas>
-      {/* <ambientLight intensity={0.3} /> */}
-      <directionalLight position={[0, 1, 0]} intensity={0.5}></directionalLight>
-      <Sky
-        distance={450000} // Camera distance (default=450000)
-        sunPosition={[0, 0, 0]} // Sun position normal (defaults to inclination and azimuth if not set)
-        inclination={0} // Sun elevation angle from 0 to 1 (default=0)
-        azimuth={0.25} // Sun rotation around the Y axis from 0 to 1 (default=0.25)
-      />
+    <>
+      <div style={{ position: "absolute", width:300+"px", right: 0 + "px", top: 0 + "px", color: "white", zIndex: 1, padding: 20 + "px" }}>
+        {formatMaze(asciiWalls)}
+      </div>
+      <Canvas>
+        {/* <ambientLight intensity={0.3} /> */}
+        <directionalLight position={[0, 1, 0]} intensity={0.5}></directionalLight>
+        <Sky
+          distance={45000} // Camera distance (default=450000)
+          sunPosition={[0, 0, 0]} // Sun position normal (defaults to inclination and azimuth if not set)
+          inclination={0} // Sun elevation angle from 0 to 1 (default=0)
+          azimuth={0.25} // Sun rotation around the Y axis from 0 to 1 (default=0.25)
+        />
 
-
-      <PhongBox pos={[-5, 0, 0]} />
-
-      <PhongSphere />
-      <CameraWithLight ref={this} />
-      <Suspense fallback={null}>
-        {/* <BuildMaze artworks={artworks} /> */}
-        <Maze artworks={artworks} cameraPos={cameraZPosition} />
-      </Suspense>
-      <fog attach="fog" args={["black", 100, 200]} />
-      <FlyControls dragToLook={true} movementSpeed={7} rollSpeed={0.63} />
-    </Canvas>
+        <PhongBox pos={[-5, 0, 0]} />
+        <PhongSphere />
+        <CameraWithLight ref={camRef} />
+        <Suspense fallback={null}>
+          {/* <BuildMaze artworks={artworks} /> */}
+          <Maze artworks={artworks} cameraPos={0} toASCII={(ASCIImaze) => setAsciiWalls(ASCIImaze)}/>
+        </Suspense>
+        <fog attach="fog" args={["black", 100, 200]} />
+        <FlyControls dragToLook={true} movementSpeed={7} rollSpeed={0.63} />
+      </Canvas>
+    </>
   );
 }
 
