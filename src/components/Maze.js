@@ -37,7 +37,7 @@ function Room({ artworks, cell, pos = [0, 0, 0], size = cellSize / 2 }) {
 // updates when camera's z position is greater than the z position of the 2nd to last row
 const useMazeGenerator = ({ actorZPos }) => {
     var mazeGenerator = new EllerMaze({ width: mazeWidth });
-    var initialMazeState = [mazeGenerator.next(), mazeGenerator.next()]
+    var initialMazeState = [mazeGenerator.next(), mazeGenerator.next(), mazeGenerator.next(), mazeGenerator.next(), mazeGenerator.next(), mazeGenerator.next(), mazeGenerator.next(), mazeGenerator.next(), mazeGenerator.next(), mazeGenerator.next()]
     const [mazeRows, setMazeRows] = useState([...initialMazeState]);
     const [threshold, setNewThreshold] = useState(cellSize)
 

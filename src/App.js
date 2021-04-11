@@ -4,7 +4,7 @@ import { AmbientLight, PointLight, Euler, Material, DoubleSide, TextureLoader } 
 import ReactDOM from 'react-dom'
 import { useLoader } from '@react-three/fiber';
 import { Canvas, useFrame } from 'react-three-fiber';
-import { Sphere, Box, PerspectiveCamera, Stars, Sky, FlyControls, Plane } from '@react-three/drei';
+import { Sphere, Box, PerspectiveCamera, Stars, Sky, FlyControls, Plane, Text } from '@react-three/drei';
 import { useBox, Physics } from '@react-three/cannon';
 import { EllerMaze, EllerArgs } from 'lazy-eller';
 import { testAPI, getArtworksFromAPI, getArtworkIDs } from './components/artwork.js';
@@ -110,7 +110,18 @@ function App() {
     // }    
     //)
     return (
-      <PerspectiveCamera ref={cRef} makeDefault position={[cellSize * 5, cellSize * 2, 10]} rotation={[0, Math.PI, 0]}>
+      <PerspectiveCamera ref={cRef} makeDefault position={[cellSize * 5, cellSize * 2, -60]} rotation={[0, Math.PI, 0]}>
+        <Text
+          color="black" // default
+          // anchorX="center" // default
+          anchorY="middle" // default
+          fontSize={1}
+          color="white"
+          position={[0,0,-10]}
+          font="https://fonts.gstatic.com/s/cutivemono/v6/m8JWjfRfY7WVjVi2E-K9H6RCTmg.woff"
+        >
+          INFINIMUSE
+        </Text>
         <pointLight intensity={2} decay={2} distance={55} />
         <Stars
           radius={100} // Radius of the inner sphere (default=100)
@@ -126,14 +137,14 @@ function App() {
 
   function formatMaze(str) {
     var r = str.split(".");
-    return <div>{r.map(row =>  <p>{row}<br/></p> )}</div>
+    return <div>{r.map(row => <p>{row}<br /></p>)}</div>
   }
 
   return (
     <>
-      <div style={{ position: "absolute", width:300+"px", right: 0 + "px", top: 0 + "px", color: "white", zIndex: 1, padding: 20 + "px" }}>
+      {/* <div style={{ position: "absolute", width: 300 + "px", right: 0 + "px", top: 0 + "px", color: "white", zIndex: 1, padding: 20 + "px" }}>
         {formatMaze(asciiWalls)}
-      </div>
+      </div> */}
       <Canvas>
         {/* <ambientLight intensity={0.3} /> */}
         <directionalLight position={[0, 1, 0]} intensity={0.5}></directionalLight>
@@ -149,7 +160,7 @@ function App() {
         <CameraWithLight ref={camRef} />
         <Suspense fallback={null}>
           {/* <BuildMaze artworks={artworks} /> */}
-          <Maze artworks={artworks} cameraPos={0} toASCII={(ASCIImaze) => setAsciiWalls(ASCIImaze)}/>
+          <Maze artworks={artworks} cameraPos={0} toASCII={(ASCIImaze) => setAsciiWalls(ASCIImaze)} />
         </Suspense>
         <fog attach="fog" args={["black", 100, 200]} />
         <FlyControls dragToLook={true} movementSpeed={7} rollSpeed={0.63} />
